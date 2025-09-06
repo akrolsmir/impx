@@ -32,7 +32,7 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
       <table className="w-120">
-        <ProjectRow project={project} />
+        <ProjectRow project={project!} />
       </table>
       <Stats stats={stats} />
     </div>
