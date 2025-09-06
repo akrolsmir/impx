@@ -21,16 +21,17 @@ function App() {
     return <div className="text-red-500 p-4">Error: {error.message}</div>
   }
   const { projects } = data
-  // console.log('p', projects)
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
       <h2 className="tracking-wide text-5xl text-gray-300">projects</h2>
-      <table className="table-auto w-160">
-        {projects.map((project) => {
-          return <ProjectRow key={project.id} project={project} />
-        })}
-      </table>
       <div className="border border-gray-300 max-w-xs w-full"></div>
+      <table className="table-auto w-160">
+        <tbody>
+          {projects.map((project) => {
+            return <ProjectRow key={project.id} project={project} />
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }
