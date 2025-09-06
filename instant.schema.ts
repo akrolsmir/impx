@@ -5,6 +5,8 @@ const _schema = i.schema({
   entities: {
     $users: i.entity({
       email: i.string().unique().indexed(),
+    }),
+    profiles: i.entity({
       name: i.string(),
     }),
     projects: i.entity({
@@ -18,6 +20,10 @@ const _schema = i.schema({
     }),
   },
   links: {
+    userProfiles: {
+      forward: { on: 'profiles', has: 'one', label: 'user' },
+      reverse: { on: '$users', has: 'one', label: 'profile' },
+    },
     txnSender: {
       forward: { on: 'txns', has: 'one', label: 'from' },
       reverse: { on: '$users', has: 'many', label: 'sentTxns' },
