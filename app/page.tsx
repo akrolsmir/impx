@@ -2,6 +2,7 @@
 
 import schema from '@/instant.schema'
 import { init, InstaQLEntity } from '@instantdb/react'
+import Link from 'next/link'
 
 // ID for app: impx
 const APP_ID = '9b5ee315-b42e-48af-a337-cb0be830674f'
@@ -36,7 +37,7 @@ function App() {
   )
 }
 
-function ProjectRow(props: { project: Project }) {
+export function ProjectRow(props: { project: Project }) {
   const { project } = props
   return (
     <tr className="">
@@ -46,9 +47,12 @@ function ProjectRow(props: { project: Project }) {
       <td>{project.title}</td>
       <td>{project.ticker}</td>
       <td>
-        <button className="outline py-1 px-2 hover:bg-green-100 hover:cursor-pointer">
+        <Link
+          className="outline py-1 px-2 hover:bg-green-100 hover:cursor-pointer"
+          href={`/project/${project.ticker}`}
+        >
           Buy
-        </button>
+        </Link>
       </td>
     </tr>
   )
