@@ -1,16 +1,12 @@
 'use client'
 
 import schema from '@/instant.schema'
-import { init, InstaQLEntity } from '@instantdb/react'
+import { InstaQLEntity } from '@instantdb/react'
 import Link from 'next/link'
-
-// ID for app: impx
-const APP_ID = '9b5ee315-b42e-48af-a337-cb0be830674f'
+import { db } from './db'
 
 type Txn = InstaQLEntity<typeof schema, 'txns'>
 type Project = InstaQLEntity<typeof schema, 'projects'>
-
-const db = init({ appId: APP_ID, schema })
 
 function App() {
   // Read Data
@@ -24,7 +20,9 @@ function App() {
   const { projects } = data
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
-      <h2 className="tracking-wide text-5xl text-gray-300">projects</h2>
+      <h2 className="tracking-wide text-5xl text-gray-300">
+        impx: impact exchange
+      </h2>
       <div className="border border-gray-300 max-w-xs w-full"></div>
       <table className="table-auto w-160">
         <tbody>
