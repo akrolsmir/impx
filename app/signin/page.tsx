@@ -4,6 +4,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
 
 import { db } from '../db'
 import { useState } from 'react'
+import { id } from '@instantdb/react'
 
 export default function Page() {
   // Create the authorization URL:
@@ -17,24 +18,84 @@ export default function Page() {
       <div className="flex flex-col gap-4 outline p-8 rounded-md ">
         <db.SignedIn>
           <UserInfo />
-          <button
-            className="outline bg-gray-50 rounded-md p-2 cursor-pointer"
-            onClick={() => db.auth.signOut()}
-          >
-            Sign out
-          </button>
         </db.SignedIn>
-        {/* <db.SignedOut> */}
-        <Login />
-        {/* </db.SignedOut> */}
+        <db.SignedOut>
+          <Login />
+        </db.SignedOut>
       </div>
     </div>
   )
 }
 
+const BANK_ID = '11a79ed5-256d-4a04-ba23-f1202667b730' // id for austin@manifund.org
+
+function claim(userId: string) {
+  // console.log('BANK', BANK_ID, userId)
+  db.transact(
+    db.tx.txns[id()]
+      .create({
+        amount: 1000,
+        token: 'USD',
+      })
+      // .link({ from: '11a79ed5-256d-4a04-ba23-f1202667b730' })
+      .link({ to: userId })
+    // .link({ projects: '760586e4-4c35-4f50-ab1e-5c714f4d1bbf' })
+  )
+
+  // db.transact(
+  //   db.tx.projects[id()].create({
+  //     title: 'bob',
+  //     ticker: 'CAT',
+  //     thumbnail: 'blah.jpg',
+  //   })
+  // )
+}
+
 function UserInfo() {
   const user = db.useUser()
-  return <h1>Hello {user.email}!</h1>
+  const { isLoading, data } = db.useQuery({
+    $users: {
+      $: {
+        where: {
+          id: user.id,
+        },
+      },
+      sentTxns: {},
+      receivedTxns: {},
+    },
+  })
+  const { sentTxns, receivedTxns } = data?.$users[0]!
+
+  // Hack: get balance. Should check for USD.
+  let balance = 0
+  receivedTxns.forEach((txn) => {
+    balance += txn.amount
+  })
+  sentTxns.forEach((txn) => {
+    balance -= txn.amount
+  })
+
+  return (
+    <div className="flex flex-col gap-4 font-mono">
+      <h1>
+        Hello {user.email}! <br />
+        Your balance is ${balance}
+      </h1>
+      <button
+        className="outline outline-gray-200 bg-gray-50 rounded-md p-2 cursor-pointer"
+        onClick={() => claim(user.id)}
+      >
+        Claim $1000
+      </button>
+
+      <button
+        className="outline outline-red-200 bg-red-50 rounded-md p-2 cursor-pointer "
+        onClick={() => db.auth.signOut()}
+      >
+        Sign out
+      </button>
+    </div>
+  )
 }
 
 const GOOGLE_CLIENT_NAME = 'google-web'
