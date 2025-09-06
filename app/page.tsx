@@ -1,61 +1,50 @@
 'use client'
 
-import { id, i, init, InstaQLEntity } from '@instantdb/react'
+import schema from '@/instant.schema'
+import { init, InstaQLEntity } from '@instantdb/react'
 
 // ID for app: impx
 const APP_ID = '9b5ee315-b42e-48af-a337-cb0be830674f'
 
-// Optional: Declare your schema!
-const schema = i.schema({
-  entities: {
-    todos: i.entity({
-      text: i.string(),
-      done: i.boolean(),
-      createdAt: i.number(),
-    }),
-  },
-  rooms: {
-    todos: {
-      presence: i.entity({}),
-    },
-  },
-})
-
-type Todo = InstaQLEntity<typeof schema, 'todos'>
+type Txn = InstaQLEntity<typeof schema, 'txns'>
+type Project = InstaQLEntity<typeof schema, 'projects'>
 
 const db = init({ appId: APP_ID, schema })
-const room = db.room('todos')
 
 function App() {
   // Read Data
-  const { isLoading, error, data } = db.useQuery({ todos: {} })
-  const { peers } = db.rooms.usePresence(room)
-  const numUsers = 1 + Object.keys(peers).length
+  const { isLoading, error, data } = db.useQuery({ projects: {} })
   if (isLoading) {
     return
   }
   if (error) {
     return <div className="text-red-500 p-4">Error: {error.message}</div>
   }
-  const { todos } = data
+  const { projects } = data
+  // console.log('p', projects)
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
-      <div className="text-xs text-gray-500">
-        Number of users online: {numUsers}
-      </div>
-      <h2 className="tracking-wide text-5xl text-gray-300">todos</h2>
-      <div className="border border-gray-300 max-w-xs w-full">
-        <TodoForm todos={todos} />
-        <TodoList todos={todos} />
-        <ActionBar todos={todos} />
-      </div>
-      <div className="text-xs text-center">
-        Open another tab to see todos update in realtime!
-      </div>
+      <h2 className="tracking-wide text-5xl text-gray-300">projects</h2>
+      {projects.map((project) => {
+        return <ProjectRow key={project.id} project={project} />
+      })}
+      <div className="border border-gray-300 max-w-xs w-full"></div>
     </div>
   )
 }
 
+function ProjectRow(props: { project: Project }) {
+  const { project } = props
+  return (
+    <div className="flex flex-row gap-4">
+      <img src={project.thumbnail} className="w-6 h-6" />
+      <p>{project.title}</p>
+      <p>{project.ticker}</p>
+    </div>
+  )
+}
+
+/**
 // Write Data
 // ---------
 function addTodo(text: string) {
@@ -183,5 +172,5 @@ function ActionBar({ todos }: { todos: Todo[] }) {
     </div>
   )
 }
-
+ */
 export default App
