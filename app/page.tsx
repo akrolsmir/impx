@@ -25,9 +25,11 @@ function App() {
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
       <h2 className="tracking-wide text-5xl text-gray-300">projects</h2>
-      {projects.map((project) => {
-        return <ProjectRow key={project.id} project={project} />
-      })}
+      <table className="table-auto w-160">
+        {projects.map((project) => {
+          return <ProjectRow key={project.id} project={project} />
+        })}
+      </table>
       <div className="border border-gray-300 max-w-xs w-full"></div>
     </div>
   )
@@ -36,11 +38,18 @@ function App() {
 function ProjectRow(props: { project: Project }) {
   const { project } = props
   return (
-    <div className="flex flex-row gap-4">
-      <img src={project.thumbnail} className="w-6 h-6" />
-      <p>{project.title}</p>
-      <p>{project.ticker}</p>
-    </div>
+    <tr className="">
+      <td>
+        <img src={project.thumbnail} className="w-8 h-8 m-1" />
+      </td>
+      <td>{project.title}</td>
+      <td>{project.ticker}</td>
+      <td>
+        <button className="outline py-1 px-2 hover:bg-green-100 hover:cursor-pointer">
+          Buy
+        </button>
+      </td>
+    </tr>
   )
 }
 
