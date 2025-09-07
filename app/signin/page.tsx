@@ -5,6 +5,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
 import { db } from '../db'
 import { useState } from 'react'
 import { id } from '@instantdb/react'
+import { createTxn } from '../actions'
 
 export default function Page() {
   // Create the authorization URL:
@@ -29,26 +30,25 @@ export default function Page() {
 
 const BANK_ID = '11a79ed5-256d-4a04-ba23-f1202667b730' // id for austin@manifund.org
 
-function claim(userId: string) {
+async function claim(userId: string) {
   // console.log('BANK', BANK_ID, userId)
-  db.transact(
-    db.tx.txns[id()]
-      .create({
-        amount: 1000,
-        token: 'USD',
-      })
-      // .link({ from: '11a79ed5-256d-4a04-ba23-f1202667b730' })
-      .link({ to: userId })
-    // .link({ projects: '760586e4-4c35-4f50-ab1e-5c714f4d1bbf' })
-  )
-
   // db.transact(
-  //   db.tx.projects[id()].create({
-  //     title: 'bob',
-  //     ticker: 'CAT',
-  //     thumbnail: 'blah.jpg',
-  //   })
+  //   db.tx.txns[id()]
+  //     .create({
+  //       amount: 1000,
+  //       token: 'USD',
+  //     })
+  //     // .link({ from: '11a79ed5-256d-4a04-ba23-f1202667b730' })
+  //     .link({ to: userId })
+  //   // .link({ projects: '760586e4-4c35-4f50-ab1e-5c714f4d1bbf' })
   // )
+
+  await createTxn({
+    amount: 1000,
+    token: 'USD',
+    from: BANK_ID,
+    to: userId,
+  })
 }
 
 function UserInfo() {
@@ -64,6 +64,7 @@ function UserInfo() {
       receivedTxns: {},
     },
   })
+  if (isLoading) return <>Loading...</>
   const { sentTxns, receivedTxns } = data?.$users[0]!
 
   // Hack: get balance. Should check for USD.

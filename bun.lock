@@ -4,6 +4,7 @@
     "": {
       "name": "impx",
       "dependencies": {
+        "@instantdb/admin": "^0.21.13",
         "@instantdb/react": "^0.21.13",
         "@react-oauth/google": "^0.12.2",
         "next": "15.5.2",
@@ -87,6 +88,8 @@
     "@img/sharp-win32-ia32": ["@img/sharp-win32-ia32@0.34.3", "", { "os": "win32", "cpu": "ia32" }, "sha512-xuCdhH44WxuXgOM714hn4amodJMZl3OEvf0GVTm0BEyMeA2to+8HEdRPShH0SLYptJY1uBw+SCFP9WVQi1Q/cw=="],
 
     "@img/sharp-win32-x64": ["@img/sharp-win32-x64@0.34.3", "", { "os": "win32", "cpu": "x64" }, "sha512-OWwz05d++TxzLEv4VnsTz5CmZ6mI6S05sfQGEMrNrQcOEERbX46332IvE7pO/EUiw7jUrrS40z/M7kPyjfl04g=="],
+
+    "@instantdb/admin": ["@instantdb/admin@0.21.13", "", { "dependencies": { "@instantdb/core": "v0.21.13", "@instantdb/version": "v0.21.13", "eventsource": "^4.0.0" } }, "sha512-dlxw+uJFAephQV4fcSPoEVYREbSaw5/9dQXtxQmvcWUIEX0i/lLyil9AV+nHLfD3gcKkzjeILJbFILytholGXQ=="],
 
     "@instantdb/core": ["@instantdb/core@0.21.13", "", { "dependencies": { "@instantdb/version": "v0.21.13", "mutative": "^1.0.10", "uuid": "^11.1.0" } }, "sha512-TtiXU4iV8ASTz+usviHupN85ZNGvMMVG4y4ADvzrwwx0Rif1aoRaKMnhffgOKXJK+bfQH6RKN/p5jODEwhVV/A=="],
 
@@ -183,6 +186,10 @@
     "detect-libc": ["detect-libc@2.0.4", "", {}, "sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA=="],
 
     "enhanced-resolve": ["enhanced-resolve@5.18.3", "", { "dependencies": { "graceful-fs": "^4.2.4", "tapable": "^2.2.0" } }, "sha512-d4lC8xfavMeBjzGr2vECC3fsGXziXZQyJxD868h2M/mBI3PwAuODxAkLkq5HYuvrPYcUtiLzsTo8U3PgX3Ocww=="],
+
+    "eventsource": ["eventsource@4.0.0", "", { "dependencies": { "eventsource-parser": "^3.0.1" } }, "sha512-fvIkb9qZzdMxgZrEQDyll+9oJsyaVvY92I2Re+qK0qEJ+w5s0X3dtz+M0VAPOjP1gtU3iqWyjQ0G3nvd5CLZ2g=="],
+
+    "eventsource-parser": ["eventsource-parser@3.0.6", "", {}, "sha512-Vo1ab+QXPzZ4tCa8SwIHJFaSzy4R6SHf7BY79rFBDf0idraZWAkYrDjDj8uWaSm3S2TK+hJ7/t1CEmZ7jXw+pg=="],
 
     "graceful-fs": ["graceful-fs@4.2.11", "", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
 

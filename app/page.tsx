@@ -1,12 +1,7 @@
 'use client'
 
-import schema from '@/instant.schema'
-import { InstaQLEntity } from '@instantdb/react'
 import Link from 'next/link'
-import { db } from './db'
-
-type Txn = InstaQLEntity<typeof schema, 'txns'>
-type Project = InstaQLEntity<typeof schema, 'projects'>
+import { db, Project } from './db'
 
 function App() {
   // Read Data
