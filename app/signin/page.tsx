@@ -62,10 +62,11 @@ function UserInfo() {
       },
       sentTxns: {},
       receivedTxns: {},
+      profile: {},
     },
   })
   if (isLoading) return <>Loading...</>
-  const { sentTxns, receivedTxns } = data?.$users[0]!
+  const { sentTxns, receivedTxns, profile } = data?.$users[0]!
 
   // Hack: get balance. Should check for USD.
   let balance = 0
@@ -78,8 +79,10 @@ function UserInfo() {
 
   return (
     <div className="flex flex-col gap-4 font-mono">
+      <img src={profile?.thumbnail} className="h-8 w-8 rounded" />
+
       <h1>
-        Hello {user.email}! <br />
+        Hello {profile?.name}! <br />
         Your balance is ${balance}
       </h1>
       <button
@@ -111,20 +114,38 @@ function Login() {
       <GoogleLogin
         nonce={nonce}
         onError={() => alert('Login failed')}
-        onSuccess={({ credential }) => {
-          db.auth
-            .signInWithIdToken({
-              clientName: GOOGLE_CLIENT_NAME,
-              idToken: credential!,
-              // Make sure this is the same nonce you passed as a prop
-              // to the GoogleLogin button
-              nonce,
-            })
-            .catch((err) => {
-              alert('Uh oh: ' + err.body?.message)
-            })
+        onSuccess={async ({ credential }) => {
+          const { user } = await db.auth.signInWithIdToken({
+            clientName: GOOGLE_CLIENT_NAME,
+            idToken: credential!,
+            nonce,
+          })
+
+          // Save info to profiles
+          const parsed = parseIdToken(credential!)
+          await db.transact(
+            db.tx.profiles[user.id]
+              .update({
+                name: parsed.name,
+                thumbnail: parsed.picture,
+              })
+              .link({ user: user.id })
+          )
         }}
       />
     </GoogleOAuthProvider>
   )
+}
+
+type JWTResponse = {
+  name: string
+  email: string
+  picture?: string | undefined
+}
+
+function parseIdToken(idToken: string): JWTResponse {
+  const base64Payload = idToken.split('.')[1]
+  const decoded = Buffer.from(base64Payload, 'base64')
+  const parsed = JSON.parse(decoded.toString())
+  return parsed
 }

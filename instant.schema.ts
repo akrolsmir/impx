@@ -8,6 +8,7 @@ const _schema = i.schema({
     }),
     profiles: i.entity({
       name: i.string(),
+      thumbnail: i.string(),
     }),
     projects: i.entity({
       title: i.string(),
