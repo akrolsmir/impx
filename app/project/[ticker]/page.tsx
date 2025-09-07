@@ -3,6 +3,7 @@ import { use } from 'react'
 import { db } from '@/app/db'
 import { ProjectRow } from '@/app/page'
 import Stats from './stats'
+import { buildAmm, price } from '@/app/math/trade'
 
 export default function Page(props: { params: Promise<{ ticker: string }> }) {
   const { ticker } = use(props.params)
@@ -17,7 +18,15 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
     },
   })
 
-  if (isLoading) {
+  const { isLoading: isLoading2, data: data2 } = db.useQuery({
+    profiles: {
+      $: { where: { name: `${ticker}-AMM` } },
+      sentTxns: {},
+      receivedTxns: {},
+    },
+  })
+
+  if (isLoading || isLoading2) {
     return <p>Loading</p>
   }
 
@@ -29,6 +38,18 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
     // { name: 'Success rate', value: '98.5%' },
   ]
 
+  // console.log('prozz', `${ticker}-AMM`, JSON.stringify(data2))
+
+  const profile = data2?.profiles[0]!
+  const { receivedTxns, sentTxns } = profile
+  const amm = buildAmm(receivedTxns, sentTxns, ticker)
+
+  const ammStats = [
+    { name: 'AMM USD', value: '$' + amm.usd },
+    { name: 'AMM Shares', value: '' + amm.shares },
+    { name: 'Price', value: '$' + price(amm) },
+  ]
+
   if (!project) return <>no project :(</>
 
   return (
@@ -38,7 +59,7 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
           <ProjectRow project={project} />
         </tbody>
       </table>
-      <Stats stats={project.stats ?? stats} />
+      <Stats stats={ammStats} />
     </div>
   )
 }
