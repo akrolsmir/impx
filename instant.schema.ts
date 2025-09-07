@@ -27,11 +27,11 @@ const _schema = i.schema({
     },
     txnSender: {
       forward: { on: 'txns', has: 'one', label: 'from' },
-      reverse: { on: '$users', has: 'many', label: 'sentTxns' },
+      reverse: { on: 'profiles', has: 'many', label: 'sentTxns' },
     },
     txnReceiver: {
       forward: { on: 'txns', has: 'one', label: 'to' },
-      reverse: { on: '$users', has: 'many', label: 'receivedTxns' },
+      reverse: { on: 'profiles', has: 'many', label: 'receivedTxns' },
     },
     txnProject: {
       forward: { on: 'txns', has: 'one', label: 'projects' },

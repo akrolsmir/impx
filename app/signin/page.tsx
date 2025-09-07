@@ -31,30 +31,29 @@ export default function Page() {
 const BANK_ID = '11a79ed5-256d-4a04-ba23-f1202667b730' // id for austin@manifund.org
 
 async function claim(userId: string) {
-  // console.log('BANK', BANK_ID, userId)
-  // db.transact(
-  //   db.tx.txns[id()]
-  //     .create({
-  //       amount: 1000,
-  //       token: 'USD',
-  //     })
-  //     // .link({ from: '11a79ed5-256d-4a04-ba23-f1202667b730' })
-  //     .link({ to: userId })
-  //   // .link({ projects: '760586e4-4c35-4f50-ab1e-5c714f4d1bbf' })
-  // )
+  console.log('BANK', BANK_ID, userId)
+  db.transact(
+    db.tx.txns[id()]
+      .create({
+        amount: 1000,
+        token: 'USD',
+      })
+      .link({ from: BANK_ID })
+      .link({ to: userId })
+  )
 
-  await createTxn({
-    amount: 1000,
-    token: 'USD',
-    from: BANK_ID,
-    to: userId,
-  })
+  // await createTxn({
+  //   amount: 1000,
+  //   token: 'USD',
+  //   from: BANK_ID,
+  //   to: userId,
+  // })
 }
 
 function UserInfo() {
   const user = db.useUser()
   const { isLoading, data } = db.useQuery({
-    $users: {
+    profiles: {
       $: {
         where: {
           id: user.id,
@@ -62,20 +61,23 @@ function UserInfo() {
       },
       sentTxns: {},
       receivedTxns: {},
-      profile: {},
+      // profile: {},
     },
   })
   if (isLoading) return <>Loading...</>
-  const { sentTxns, receivedTxns, profile } = data?.$users[0]!
+  const profile = data?.profiles[0]
+  // if (!profile) return <>no profile</>
 
   // Hack: get balance. Should check for USD.
   let balance = 0
-  receivedTxns.forEach((txn) => {
-    balance += txn.amount
-  })
-  sentTxns.forEach((txn) => {
-    balance -= txn.amount
-  })
+  if (profile) {
+    profile.receivedTxns.forEach((txn) => {
+      balance += txn.amount
+    })
+    profile.sentTxns.forEach((txn) => {
+      balance -= txn.amount
+    })
+  }
 
   return (
     <div className="flex flex-col gap-4 font-mono">

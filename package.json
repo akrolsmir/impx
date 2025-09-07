@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "push-schema": "bunx instant-cli@latest push schema"
+    "push-schema": "bunx instant-cli@latest push schema",
+    "push-perms": "bunx instant-cli@latest push perms"
   },
   "dependencies": {
     "@instantdb/admin": "^0.21.13",
