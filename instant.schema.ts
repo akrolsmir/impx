@@ -15,6 +15,7 @@ const _schema = i.schema({
       ticker: i.string().unique().indexed(),
       thumbnail: i.string(),
       stats: i.json().optional(),
+      price: i.number().optional(),
     }),
     txns: i.entity({
       amount: i.number(),

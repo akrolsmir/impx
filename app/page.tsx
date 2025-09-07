@@ -50,6 +50,7 @@ export function ProjectRow(props: { project: Project }) {
       </td>
       <td>{project.title}</td>
       <td>{project.ticker}</td>
+      <td>${project.price}/share</td>
       <td>
         <Link
           className="outline py-1 px-2 hover:bg-green-100 hover:cursor-pointer"
