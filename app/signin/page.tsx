@@ -6,6 +6,7 @@ import { db } from '../db'
 import { useState } from 'react'
 import { id } from '@instantdb/react'
 import { createTxn } from '../actions'
+import { buildAmm } from '../math/trade'
 
 export default function Page() {
   // Create the authorization URL:
@@ -68,15 +69,9 @@ export function UserInfo() {
   const profile = data?.profiles[0]
   // if (!profile) return <>no profile</>
 
-  // Hack: get balance. Should check for USD.
   let balance = 0
   if (profile) {
-    profile.receivedTxns.forEach((txn) => {
-      balance += txn.amount
-    })
-    profile.sentTxns.forEach((txn) => {
-      balance -= txn.amount
-    })
+    balance = buildAmm(profile.receivedTxns, profile.sentTxns).usd
   }
 
   return (

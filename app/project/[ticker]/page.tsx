@@ -3,7 +3,8 @@ import { use } from 'react'
 import { db } from '@/app/db'
 import { ProjectRow } from '@/app/page'
 import Stats from './stats'
-import { buildAmm, price } from '@/app/math/trade'
+import { AMM, buildAmm, price } from '@/app/math/trade'
+import { executeTrade } from '@/app/math/tradeDb'
 
 export default function Page(props: { params: Promise<{ ticker: string }> }) {
   const { ticker } = use(props.params)
@@ -41,7 +42,7 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
   // console.log('prozz', `${ticker}-AMM`, JSON.stringify(data2))
 
   const profile = data2?.profiles[0]!
-  const { receivedTxns, sentTxns } = profile
+  const { receivedTxns, sentTxns, id: ammId } = profile
   const amm = buildAmm(receivedTxns, sentTxns, ticker)
 
   const ammStats = [
@@ -60,6 +61,28 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
         </tbody>
       </table>
       <Stats stats={ammStats} />
+
+      <db.SignedIn>
+        <BuyWidget amm={amm} ammId={ammId} ticker={ticker} />
+      </db.SignedIn>
     </div>
+  )
+}
+
+function BuyWidget(props: { amm: AMM; ammId: string; ticker: string }) {
+  const { amm, ammId, ticker } = props
+  const user = db.useUser()
+  return (
+    <>
+      {/* Buy widget */}
+      <button
+        className="outline outline-green-200 bg-green-50 rounded-md p-2 cursor-pointer"
+        onClick={() => {
+          executeTrade(amm, { shares: 0, usd: 10 }, ammId, user.id, ticker)
+        }}
+      >
+        Buy w/ $10
+      </button>
+    </>
   )
 }

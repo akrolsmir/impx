@@ -1,6 +1,6 @@
 import { Txn } from '../db'
 
-type AMM = {
+export type AMM = {
   shares: number
   usd: number
 }
@@ -65,5 +65,13 @@ export function buildAmm(
   return {
     usd,
     shares,
+  }
+}
+
+// Note that this will return some negative numbers
+export function diffAmm(first: AMM, second: AMM): AMM {
+  return {
+    usd: first.usd - second.usd,
+    shares: first.shares - second.shares,
   }
 }
