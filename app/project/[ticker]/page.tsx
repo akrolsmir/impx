@@ -29,14 +29,16 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
     // { name: 'Success rate', value: '98.5%' },
   ]
 
+  if (!project) return <>no project :(</>
+
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
       <table className="w-120">
         <tbody>
-          <ProjectRow project={project!} />
+          <ProjectRow project={project} />
         </tbody>
       </table>
-      <Stats stats={stats} />
+      <Stats stats={project.stats ?? stats} />
     </div>
   )
 }

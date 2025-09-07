@@ -50,7 +50,7 @@ async function claim(userId: string) {
   // })
 }
 
-function UserInfo() {
+export function UserInfo() {
   const user = db.useUser()
   const { isLoading, data } = db.useQuery({
     profiles: {
@@ -81,12 +81,11 @@ function UserInfo() {
 
   return (
     <div className="flex flex-col gap-4 font-mono">
-      <img src={profile?.thumbnail} className="h-8 w-8 rounded" />
-
-      <h1>
-        Hello {profile?.name}! <br />
-        Your balance is ${balance}
-      </h1>
+      <div className="flex flex-row items-center gap-2">
+        <img src={profile?.thumbnail} className="h-8 w-8 rounded" />
+        {profile?.name}{' '}
+      </div>
+      <h1>Balance: ${balance}</h1>
       <button
         className="outline outline-gray-200 bg-gray-50 rounded-md p-2 cursor-pointer"
         onClick={() => claim(user.id)}
