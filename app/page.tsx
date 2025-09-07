@@ -16,7 +16,7 @@ function App() {
   const { projects } = data
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
-      <button className="absolute top-2 right-2">
+      <div className="absolute top-2 right-2">
         <db.SignedIn>
           <div className="outline outline-gray-200 p-4 rounded">
             <UserInfo />
@@ -25,7 +25,7 @@ function App() {
         <db.SignedOut>
           <Link href="/signin">Sign in</Link>{' '}
         </db.SignedOut>
-      </button>
+      </div>
       <h2 className="tracking-wide text-5xl text-gray-300">
         impx: impact exchange
       </h2>
