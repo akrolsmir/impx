@@ -14,7 +14,8 @@ export function executeTrade(
 
   const [payerId, sharerId] =
     delta.usd > 0 ? [traderId, ammId] : [ammId, traderId]
-  const now = JSON.stringify(new Date())
+  // const now = JSON.stringify(new Date())
+  const now = new Date()
 
   db.transact([
     db.tx.txns[id()]

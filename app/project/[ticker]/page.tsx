@@ -11,23 +11,22 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
 
   const { isLoading, data } = db.useQuery({
     projects: {
-      $: {
-        where: {
-          ticker: ticker,
-        },
+      $: { where: { ticker } },
+    },
+    profiles: {
+      $: { where: { name: `${ticker}-AMM` } },
+      sentTxns: {
+        from: { $: { fields: ['name'] } },
+        to: { $: { fields: ['name'] } },
+      },
+      receivedTxns: {
+        from: { $: { fields: ['name'] } },
+        to: { $: { fields: ['name'] } },
       },
     },
   })
 
-  const { isLoading: isLoading2, data: data2 } = db.useQuery({
-    profiles: {
-      $: { where: { name: `${ticker}-AMM` } },
-      sentTxns: {},
-      receivedTxns: {},
-    },
-  })
-
-  if (isLoading || isLoading2) {
+  if (isLoading) {
     return <p>Loading</p>
   }
 
@@ -39,9 +38,7 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
     // { name: 'Success rate', value: '98.5%' },
   ]
 
-  // console.log('prozz', `${ticker}-AMM`, JSON.stringify(data2))
-
-  const profile = data2?.profiles[0]
+  const profile = data?.profiles[0]
 
   if (!profile) {
     return <>AMM profile not found :(</>
@@ -58,18 +55,51 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
 
   if (!project) return <>no project :(</>
 
+  const txns = [...receivedTxns, ...sentTxns].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  )
+
   return (
-    <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
+    <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-12 p-8">
       <table className="w-120">
         <tbody>
           <ProjectRow project={project} />
         </tbody>
       </table>
-      <Stats stats={ammStats} />
 
-      <db.SignedIn>
-        <BuyWidget amm={amm} ammId={ammId} ticker={ticker} />
-      </db.SignedIn>
+      <div className="flex flex-row space-x-4 items-center">
+        <Stats stats={ammStats} />
+
+        <db.SignedIn>
+          <BuyWidget amm={amm} ammId={ammId} ticker={ticker} />
+        </db.SignedIn>
+      </div>
+
+      {/* Show all txns as a table */}
+      <table className="">
+        <thead>
+          <tr>
+            <th className="px-2 py-1 border-b">Amount</th>
+            <th className="px-2 py-1 border-b">Token</th>
+            <th className="px-2 py-1 border-b">From</th>
+            <th className="px-2 py-1 border-b">To</th>
+            <th className="px-2 py-1 border-b">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {txns.map((txn) => (
+            <tr key={txn.id}>
+              <td className="px-2 py-1 border-b">{txn.amount}</td>
+              <td className="px-2 py-1 border-b">{txn.token}</td>
+              <td className="px-2 py-1 border-b">{txn.from?.name}</td>
+              <td className="px-2 py-1 border-b">{txn.to?.name}</td>
+              <td className="px-2 py-1 border-b">
+                {new Date(txn.createdAt).toLocaleString()}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
@@ -77,24 +107,36 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
 function BuyWidget(props: { amm: AMM; ammId: string; ticker: string }) {
   const { amm, ammId, ticker } = props
   const user = db.useUser()
-  const [amount, setAmount] = useState(1000)
+  const [amount, setAmount] = useState(100)
 
   const newAmm = calculateCfmm(amm, { shares: 0, usd: -amount })
   const sharesToSell = newAmm.shares - amm.shares
   console.log('sharesToSell', sharesToSell)
 
   return (
-    <>
-      {/* Buy widget */}
-      <div className="flex flex-col space-y-2">
-        <input
-          className="border border-gray-300 rounded-md p-2 cursor-pointer"
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
-        />
+    <div className="flex flex-col space-y-2 items-center p-4 border border-gray-300 rounded-md">
+      <h2 className="text-lg font-bold">Trade {ticker}</h2>
+      <input
+        className="border border-gray-300 rounded-md p-2 cursor-pointer"
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(Number(e.target.value))}
+      />
+      {/* Quick trade -- buttons to set amount to 10, 50, 100, 500 */}
+      <div className="flex flex-row space-x-2 justify-between w-full">
+        {[10, 50, 100, 500].map((amount) => (
+          <button
+            className="bg-gray-100 hover:bg-gray-200 rounded-md p-2 cursor-pointer"
+            onClick={() => setAmount(amount)}
+          >
+            {amount}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-row space-x-2 mt-8">
         <button
-          className="outline outline-green-200 bg-green-50 rounded-md p-2 cursor-pointer"
+          className="outline outline-green-200 bg-green-50 hover:bg-green-100 rounded-md p-2 cursor-pointer"
           onClick={() => {
             executeTrade(
               amm,
@@ -105,10 +147,10 @@ function BuyWidget(props: { amm: AMM; ammId: string; ticker: string }) {
             )
           }}
         >
-          Buy ${amount} of {ticker}
+          Buy
         </button>
         <button
-          className="outline outline-red-200 bg-red-50 rounded-md p-2 cursor-pointer"
+          className="outline outline-red-200 bg-red-50 hover:bg-red-100 rounded-md p-2 cursor-pointer"
           onClick={() => {
             executeTrade(
               amm,
@@ -119,9 +161,9 @@ function BuyWidget(props: { amm: AMM; ammId: string; ticker: string }) {
             )
           }}
         >
-          Sell ${amount} of {ticker}
+          Sell
         </button>
       </div>
-    </>
+    </div>
   )
 }
