@@ -41,7 +41,12 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
 
   // console.log('prozz', `${ticker}-AMM`, JSON.stringify(data2))
 
-  const profile = data2?.profiles[0]!
+  const profile = data2?.profiles[0]
+
+  if (!profile) {
+    return <>AMM profile not found :(</>
+  }
+
   const { receivedTxns, sentTxns, id: ammId } = profile
   const amm = buildAmm(receivedTxns, sentTxns, ticker)
 
