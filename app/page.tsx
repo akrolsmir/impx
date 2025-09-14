@@ -3,17 +3,25 @@
 import Link from 'next/link'
 import { db, Project } from './db'
 import { UserInfo } from './signin/page'
+import { buildAmm, price } from './math/trade'
 
 function App() {
-  // Read Data
-  const { isLoading, error, data } = db.useQuery({ projects: {} })
+  // Read Data - Get projects and their AMM profiles
+  const { isLoading, error, data } = db.useQuery({
+    projects: {},
+    profiles: {
+      $: { where: { name: { $like: '%-AMM' } } },
+      sentTxns: {},
+      receivedTxns: {},
+    },
+  })
   if (isLoading) {
     return
   }
   if (error) {
-    return <div className="text-red-500 p-4">Error: {error.message}</div>
+    throw error
   }
-  const { projects } = data
+  const { projects, profiles } = data
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-4">
       <div className="absolute top-2 right-2">
@@ -33,7 +41,13 @@ function App() {
       <table className="table-auto w-160">
         <tbody>
           {projects.map((project) => {
-            return <ProjectRow key={project.id} project={project} />
+            return (
+              <ProjectRow
+                key={project.id}
+                project={project}
+                profiles={profiles}
+              />
+            )
           })}
         </tbody>
       </table>
@@ -41,8 +55,27 @@ function App() {
   )
 }
 
-export function ProjectRow(props: { project: Project }) {
-  const { project } = props
+export function ProjectRow(props: { project: Project; profiles: any[] }) {
+  const { project, profiles } = props
+
+  // Find the AMM profile for this project
+  const ammProfile = profiles?.find(
+    (profile) => profile.name === `${project.ticker}-AMM`
+  )
+
+  // Calculate the real-time price using AMM data
+  let currentPrice = 0
+  if (ammProfile?.receivedTxns && ammProfile?.sentTxns) {
+    const amm = buildAmm(
+      ammProfile.receivedTxns,
+      ammProfile.sentTxns,
+      project.ticker
+    )
+    if (amm.shares > 0) {
+      currentPrice = price(amm)
+    }
+  }
+
   return (
     <tr className="">
       <td>
@@ -50,7 +83,7 @@ export function ProjectRow(props: { project: Project }) {
       </td>
       <td>{project.title}</td>
       <td>{project.ticker}</td>
-      <td>${project.price}/share</td>
+      <td>${currentPrice.toFixed(0)}/share</td>
       <td>
         <Link
           className="outline py-1 px-2 hover:bg-green-100 hover:cursor-pointer"

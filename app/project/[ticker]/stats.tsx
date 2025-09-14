@@ -9,7 +9,7 @@ export default function Example(props: { stats: Stat[] }) {
   return (
     <div className="bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4 dark:bg-white/10">
+        <div className="grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 dark:bg-white/10">
           {stats.map((stat) => (
             <div
               key={stat.name}

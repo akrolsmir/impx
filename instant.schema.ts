@@ -7,7 +7,7 @@ const _schema = i.schema({
       email: i.string().unique().indexed(),
     }),
     profiles: i.entity({
-      name: i.string(),
+      name: i.string().indexed(),
       thumbnail: i.string(),
     }),
     projects: i.entity({
@@ -38,8 +38,8 @@ const _schema = i.schema({
       reverse: { on: 'profiles', has: 'many', label: 'receivedTxns' },
     },
     txnProject: {
-      forward: { on: 'txns', has: 'one', label: 'projects' },
-      reverse: { on: 'txns', has: 'many', label: 'txns' },
+      forward: { on: 'txns', has: 'one', label: 'project' },
+      reverse: { on: 'projects', has: 'many', label: 'txns' },
     },
   },
 })
