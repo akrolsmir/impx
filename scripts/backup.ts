@@ -53,7 +53,9 @@ async function main() {
       const reverseLabel = linkDef.reverse.label
 
       console.log(
-        `  Fetching ${linkName} (${forwardEntity}.${forwardLabel} <-> ${reverseEntity}.${reverseLabel})...`
+        `  Fetching ${linkName} (${String(
+          forwardEntity
+        )}.${forwardLabel} <-> ${String(reverseEntity)}.${reverseLabel})...`
       )
 
       // Query from the forward entity with the reverse relationship
@@ -64,7 +66,7 @@ async function main() {
           },
         }
         const result = await db.query(query)
-        relationships[linkName] = result[forwardEntity] || []
+        relationships[linkName] = result[String(forwardEntity)] || []
       } catch (error) {
         console.warn(
           `    Warning: Could not fetch relationship ${linkName}:`,

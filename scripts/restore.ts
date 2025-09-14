@@ -162,7 +162,7 @@ async function main() {
 
             try {
               await db.transact([
-                db.tx[linkDef.forward.on][relatedEntity.id].link({
+                db.tx[String(linkDef.forward.on)][relatedEntity.id].link({
                   [forwardLabel]: entity.id,
                 }),
               ])
