@@ -9,12 +9,6 @@ import { createTxn } from '../actions'
 import { buildAmm } from '../math/trade'
 
 export default function Page() {
-  // Create the authorization URL:
-  const url = db.auth.createAuthorizationURL({
-    clientName: 'google-web',
-    redirectURL: 'localhost:3000',
-  })
-
   return (
     <div className="flex flex-col gap-4 min-h-screen justify-center items-center">
       <div className="flex flex-col gap-4 outline p-8 rounded-md ">
@@ -81,7 +75,7 @@ export function UserInfo() {
         <img src={profile?.thumbnail} className="h-8 w-8 rounded" />
         {profile?.name}{' '}
       </div>
-      <h1>Balance: ${balance}</h1>
+      <h1>Balance: ${balance.toFixed(2)}</h1>
       <button
         className="outline outline-gray-200 bg-gray-50 rounded-md p-2 cursor-pointer"
         onClick={() => claim(user.id)}
