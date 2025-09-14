@@ -9,7 +9,9 @@
     "lint": "biome check",
     "format": "biome format --write",
     "push-schema": "bunx instant-cli@latest push schema",
-    "push-perms": "bunx instant-cli@latest push perms"
+    "push-perms": "bunx instant-cli@latest push perms",
+    "backup": "bun scripts/backup.ts",
+    "restore": "bun scripts/restore.ts"
   },
   "dependencies": {
     "@instantdb/admin": "^0.21.13",
