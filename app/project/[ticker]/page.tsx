@@ -1,9 +1,9 @@
 'use client'
-import { use } from 'react'
+import { use, useState } from 'react'
 import { db } from '@/app/db'
 import { ProjectRow } from '@/app/page'
 import Stats from './stats'
-import { AMM, buildAmm, price } from '@/app/math/trade'
+import { AMM, buildAmm, calculateCfmm, price } from '@/app/math/trade'
 import { executeTrade } from '@/app/math/tradeDb'
 
 export default function Page(props: { params: Promise<{ ticker: string }> }) {
@@ -51,9 +51,9 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
   const amm = buildAmm(receivedTxns, sentTxns, ticker)
 
   const ammStats = [
-    { name: 'AMM USD', value: '$' + amm.usd },
-    { name: 'AMM Shares', value: '' + amm.shares },
-    { name: 'Price', value: '$' + price(amm) },
+    { name: 'AMM USD', value: '$' + amm.usd.toFixed(2) },
+    { name: 'AMM Shares', value: '' + amm.shares.toFixed(2) },
+    { name: 'Price', value: '$' + price(amm).toFixed(2) },
   ]
 
   if (!project) return <>no project :(</>
@@ -77,17 +77,51 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
 function BuyWidget(props: { amm: AMM; ammId: string; ticker: string }) {
   const { amm, ammId, ticker } = props
   const user = db.useUser()
+  const [amount, setAmount] = useState(1000)
+
+  const newAmm = calculateCfmm(amm, { shares: 0, usd: -amount })
+  const sharesToSell = newAmm.shares - amm.shares
+  console.log('sharesToSell', sharesToSell)
+
   return (
     <>
       {/* Buy widget */}
-      <button
-        className="outline outline-green-200 bg-green-50 rounded-md p-2 cursor-pointer"
-        onClick={() => {
-          executeTrade(amm, { shares: 0, usd: 10 }, ammId, user.id, ticker)
-        }}
-      >
-        Buy w/ $10
-      </button>
+      <div className="flex flex-col space-y-2">
+        <input
+          className="border border-gray-300 rounded-md p-2 cursor-pointer"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+        />
+        <button
+          className="outline outline-green-200 bg-green-50 rounded-md p-2 cursor-pointer"
+          onClick={() => {
+            executeTrade(
+              amm,
+              { shares: 0, usd: amount },
+              ammId,
+              user.id,
+              ticker
+            )
+          }}
+        >
+          Buy ${amount} of {ticker}
+        </button>
+        <button
+          className="outline outline-red-200 bg-red-50 rounded-md p-2 cursor-pointer"
+          onClick={() => {
+            executeTrade(
+              amm,
+              { shares: sharesToSell, usd: 0 },
+              ammId,
+              user.id,
+              ticker
+            )
+          }}
+        >
+          Sell ${amount} of {ticker}
+        </button>
+      </div>
     </>
   )
 }

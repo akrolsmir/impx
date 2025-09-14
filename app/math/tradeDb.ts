@@ -19,7 +19,7 @@ export function executeTrade(
   db.transact([
     db.tx.txns[id()]
       .create({
-        amount: delta.usd,
+        amount: Math.abs(delta.usd),
         token: 'USD',
         createdAt: now,
       })
@@ -27,7 +27,7 @@ export function executeTrade(
       .link({ to: sharerId }),
     db.tx.txns[id()]
       .create({
-        amount: delta.shares,
+        amount: Math.abs(delta.shares),
         token: token,
         createdAt: now,
       })

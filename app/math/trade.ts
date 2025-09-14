@@ -10,12 +10,9 @@ export function price(amm: AMM) {
 }
 
 // Calculate what a purchase would look like using constant function market maker
-// proposal should be a new amm, with either shares or USD positive, the other 0
+// proposal should be a new amm, with either shares or USD nonzero, the other 0
 export function calculateCfmm(amm: AMM, proposal: AMM): AMM {
-  if (
-    !(proposal.shares > 0 && proposal.usd === 0) &&
-    !(proposal.shares === 0 && proposal.usd > 0)
-  ) {
+  if ((proposal.shares === 0) === (proposal.usd === 0)) {
     throw new Error('Invalid proposal:' + JSON.stringify(proposal))
   }
 
