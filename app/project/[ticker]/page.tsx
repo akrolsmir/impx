@@ -5,6 +5,8 @@ import { ProjectRow } from '@/app/page'
 import Stats from './stats'
 import { AMM, buildAmm, calculateCfmm, price } from '@/app/math/trade'
 import { executeTrade } from '@/app/math/tradeDb'
+import Link from 'next/link'
+import { ArrowLeftIcon } from 'lucide-react'
 
 export default function Page(props: { params: Promise<{ ticker: string }> }) {
   const { ticker } = use(props.params)
@@ -61,11 +63,19 @@ export default function Page(props: { params: Promise<{ ticker: string }> }) {
 
   return (
     <div className="font-mono min-h-screen flex justify-center items-center flex-col space-y-12 p-8">
-      <table className="w-120">
-        <tbody>
-          <ProjectRow project={project} />
-        </tbody>
-      </table>
+      {/* <ProjectRow project={project} /> */}
+      <div className="flex flex-row space-x-4 items-center">
+        <Link href="/" className="hover:cursor-pointer">
+          <ArrowLeftIcon className="w-6 h-6" />
+        </Link>
+        <img
+          src={project.thumbnail}
+          alt={project.title}
+          className="w-12 h-12"
+        />
+        <h1 className="text-2xl">{project.title}</h1>
+        <h2 className="text-2xl">{project.ticker}</h2>
+      </div>
 
       <div className="flex flex-row space-x-4 items-center">
         <Stats stats={ammStats} />
