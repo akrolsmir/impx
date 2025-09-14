@@ -38,6 +38,7 @@ async function claim(userId: string) {
       .create({
         amount: 1000,
         token: 'USD',
+        createdAt: JSON.stringify(new Date()),
       })
       .link({ from: BANK_ID })
       .link({ to: userId })

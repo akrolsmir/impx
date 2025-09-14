@@ -20,6 +20,8 @@ const _schema = i.schema({
     txns: i.entity({
       amount: i.number(),
       token: i.string(), // 'USD', or ticker?
+      // Todo: add timestamp
+      createdAt: i.date().indexed(),
     }),
   },
   links: {

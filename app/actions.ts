@@ -14,6 +14,7 @@ export async function createTxn(props: {
       .create({
         amount,
         token,
+        createdAt: JSON.stringify(new Date()),
       })
       .link({ from })
       .link({ to })

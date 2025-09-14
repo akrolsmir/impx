@@ -14,12 +14,14 @@ export function executeTrade(
 
   const [payerId, sharerId] =
     delta.usd > 0 ? [traderId, ammId] : [ammId, traderId]
+  const now = JSON.stringify(new Date())
 
   db.transact([
     db.tx.txns[id()]
       .create({
         amount: delta.usd,
         token: 'USD',
+        createdAt: now,
       })
       .link({ from: payerId })
       .link({ to: sharerId }),
@@ -27,6 +29,7 @@ export function executeTrade(
       .create({
         amount: delta.shares,
         token: token,
+        createdAt: now,
       })
       .link({ from: sharerId })
       .link({ to: payerId }),
